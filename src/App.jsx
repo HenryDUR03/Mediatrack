@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import Inventario from './components/Inventario'
 import FiltrosInventario from './components/FiltrosInventario'
+import FormularioSolicitud from './components/FormularioSolicitud'
+import ListaPrestamos from './components/ListaPrestamos'
 
 // Datos iniciales: 6 equipos, 4 categorías, uno en Mantenimiento
 const equiposIniciales = [
@@ -46,9 +48,49 @@ function App() {
     setEstadoFiltro('Todos')
   }
 
-  return (
+    // Genera el siguiente ID consecutivo: SOL-001, SOL-002...
+  const generarIdSolicitud = () => {
+    const numeros = solicitudes.map((s) => Number(s.id.replace('SOL-', '')))
+    const siguiente = numeros.length ? Math.max(...numeros) + 1 : 1
+    return `SOL-${String(siguiente).padStart(3, '0')}`
+  }
+
+  // Registra una solicitud aplicando las reglas de préstamo.
+  // Las reglas se validan aquí (lógica) y no solo en el formulario (interfaz).
+  const registrarSolicitud = (datos) => {
+    const equipo = equipos.find((e) => e.codigo === datos.codigoEquipo)
+
+    if (!equipo) {
+      return { ok: false, error: 'El equipo seleccionado no existe.' }
+    }
+    if (equipo.estado !== 'Disponible') {
+      return { ok: false, error: `El equipo ${equipo.codigo} no está disponible (${equipo.estado}).` }
+    }
+    const yaPrestado = solicitudes.some(
+      (s) => s.codigoEquipo === equipo.codigo && s.estado === 'Activo',
+    )
+    if (yaPrestado) {
+      return { ok: false, error: `El equipo ${equipo.codigo} ya tiene una solicitud activa.` }
+    }
+
+    const id = generarIdSolicitud()
+    const nueva = { ...datos, id, estado: 'Activo' }
+
+    // Se crean arreglos nuevos, sin modificar los originales
+    setSolicitudes([...solicitudes, nueva])
+    setEquipos(equipos.map((e) => (e.codigo === equipo.codigo ? { ...e, estado: 'Prestado' } : e)))
+
+    return { ok: true, id }
+  }
+    return (
     <div className="app">
       <h1>{import.meta.env.VITE_APP_NAME}</h1>
+
+      <FormularioSolicitud
+        equiposDisponibles={equipos.filter((e) => e.estado === 'Disponible')}
+        onRegistrar={registrarSolicitud}
+      />
+
       <FiltrosInventario
         busqueda={busqueda}
         onBusqueda={setBusqueda}
@@ -60,6 +102,8 @@ function App() {
         onLimpiar={limpiarFiltros}
       />
       <Inventario equipos={equiposFiltrados} />
+
+      <ListaPrestamos solicitudes={solicitudes} equipos={equipos} />
     </div>
   )
 }

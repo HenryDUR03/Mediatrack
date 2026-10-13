@@ -73,3 +73,74 @@ body {
   color: #55616d;
   padding: 0.75rem 0;
 }
+
+.panel {
+  background: #fff;
+  border: 1px solid #d9e0e6;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.formulario label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.formulario input,
+.formulario select {
+  font: inherit;
+  font-weight: 400;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #c5ced6;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.error {
+  color: #b3261e;
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+.acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.btn-primario {
+  background: #0f6b6b;
+  border-color: #0f6b6b;
+  color: #fff;
+}
+
+.btn-primario:hover {
+  background: #0a4f4f;
+}
+
+.mensaje {
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.mensaje-exito {
+  background: #dff3e6;
+  color: #1f7a45;
+}
+
+.mensaje-error {
+  background: #fbe3e1;
+  color: #b3261e;
+}
