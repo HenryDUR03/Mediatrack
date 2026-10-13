@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Inventario from './components/Inventario'
 
 // Datos iniciales: 6 equipos, 4 categorías, uno en Mantenimiento
 const equiposIniciales = [
@@ -20,11 +21,11 @@ function App() {
   const [solicitudes, setSolicitudes] = useState(solicitudesIniciales)
 
   return (
-    <div>
+    <div className="app">
       <h1>{import.meta.env.VITE_APP_NAME}</h1>
-      <p>{equipos.length} equipos y {solicitudes.length} solicitud(es) cargados.</p>
+      <Inventario equipos={equipos} />
     </div>
-  )
+   )
 }
 
 export default App
