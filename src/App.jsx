@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Inventario from './components/Inventario'
+import FiltrosInventario from './components/FiltrosInventario'
 
 // Datos iniciales: 6 equipos, 4 categorías, uno en Mantenimiento
 const equiposIniciales = [
@@ -17,15 +18,50 @@ const solicitudesIniciales = [
 ]
 
 function App() {
+  // Estado principal de la aplicación
   const [equipos, setEquipos] = useState(equiposIniciales)
   const [solicitudes, setSolicitudes] = useState(solicitudesIniciales)
+
+  // Estado de los filtros
+  const [busqueda, setBusqueda] = useState('')
+  const [categoria, setCategoria] = useState('Todas')
+  const [estadoFiltro, setEstadoFiltro] = useState('Todos')
+
+  // Categorías calculadas a partir de los equipos (sin repetir)
+  const categorias = [...new Set(equipos.map((e) => e.categoria))]
+
+  // Lista derivada: se calcula en cada render y NO modifica "equipos"
+  const texto = busqueda.trim().toLowerCase()
+  const equiposFiltrados = equipos.filter((e) => {
+    const coincideTexto =
+      e.nombre.toLowerCase().includes(texto) || e.codigo.toLowerCase().includes(texto)
+    const coincideCategoria = categoria === 'Todas' || e.categoria === categoria
+    const coincideEstado = estadoFiltro === 'Todos' || e.estado === estadoFiltro
+    return coincideTexto && coincideCategoria && coincideEstado
+  })
+
+  const limpiarFiltros = () => {
+    setBusqueda('')
+    setCategoria('Todas')
+    setEstadoFiltro('Todos')
+  }
 
   return (
     <div className="app">
       <h1>{import.meta.env.VITE_APP_NAME}</h1>
-      <Inventario equipos={equipos} />
+      <FiltrosInventario
+        busqueda={busqueda}
+        onBusqueda={setBusqueda}
+        categoria={categoria}
+        onCategoria={setCategoria}
+        estado={estadoFiltro}
+        onEstado={setEstadoFiltro}
+        categorias={categorias}
+        onLimpiar={limpiarFiltros}
+      />
+      <Inventario equipos={equiposFiltrados} />
     </div>
-   )
+  )
 }
 
 export default App

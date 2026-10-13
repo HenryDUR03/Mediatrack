@@ -10,6 +10,9 @@ function Inventario({ equipos }) {
   return (
     <section>
       <h2>Inventario</h2>
+            {equipos.length === 0 && (
+        <p className="vacio">No se encontraron equipos con esos criterios.</p>
+      )}
       <table className="tabla">
         <thead>
           <tr>
