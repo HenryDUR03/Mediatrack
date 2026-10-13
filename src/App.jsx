@@ -19,6 +19,14 @@ const solicitudesIniciales = [
   { id: 'SOL-001', solicitante: 'Laura Gómez', tipoUsuario: 'Estudiante', codigoEquipo: 'MIC-001', fechaPrestamo: '2026-01-05', fechaPrevista: '2026-01-08', estado: 'Activo' },
 ]
 
+// Fecha de hoy en formato AAAA-MM-DD usando la hora LOCAL (no UTC)
+const fechaHoy = () => {
+  const d = new Date()
+  const mes = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${mes}-${dia}`
+}
+
 function App() {
   // Estado principal de la aplicación
   const [equipos, setEquipos] = useState(equiposIniciales)
@@ -48,7 +56,7 @@ function App() {
     setEstadoFiltro('Todos')
   }
 
-    // Genera el siguiente ID consecutivo: SOL-001, SOL-002...
+  // Genera el siguiente ID consecutivo: SOL-001, SOL-002...
   const generarIdSolicitud = () => {
     const numeros = solicitudes.map((s) => Number(s.id.replace('SOL-', '')))
     const siguiente = numeros.length ? Math.max(...numeros) + 1 : 1
@@ -82,7 +90,24 @@ function App() {
 
     return { ok: true, id }
   }
-    return (
+
+  // Registra la devolución: la solicitud pasa a Devuelto y el equipo a
+  // Disponible, salvo que se envíe a Mantenimiento.
+  const devolverSolicitud = (id, aMantenimiento) => {
+    const solicitud = solicitudes.find((s) => s.id === id)
+    if (!solicitud || solicitud.estado !== 'Activo') return
+
+    setSolicitudes(solicitudes.map((s) => (s.id === id ? { ...s, estado: 'Devuelto' } : s)))
+    setEquipos(
+      equipos.map((e) =>
+        e.codigo === solicitud.codigoEquipo
+          ? { ...e, estado: aMantenimiento ? 'Mantenimiento' : 'Disponible' }
+          : e,
+      ),
+    )
+  }
+
+  return (
     <div className="app">
       <h1>{import.meta.env.VITE_APP_NAME}</h1>
 
@@ -103,7 +128,12 @@ function App() {
       />
       <Inventario equipos={equiposFiltrados} />
 
-      <ListaPrestamos solicitudes={solicitudes} equipos={equipos} />
+      <ListaPrestamos
+        solicitudes={solicitudes}
+        equipos={equipos}
+        hoy={fechaHoy()}
+        onDevolver={devolverSolicitud}
+      />
     </div>
   )
 }

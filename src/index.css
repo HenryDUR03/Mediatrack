@@ -144,3 +144,16 @@ body {
   background: #fbe3e1;
   color: #b3261e;
 }
+
+.estado-activo { background: #dbeafe; color: #1e4fa3; }
+.estado-devuelto { background: #e4e8ec; color: #55616d; }
+.estado-atrasado { background: #fbe3e1; color: #b3261e; margin-left: 0.4rem; }
+
+.fila-atrasada { background: #fdf1f0; }
+
+.acciones-fila { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.btn-pequeno {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.78rem;
+}
