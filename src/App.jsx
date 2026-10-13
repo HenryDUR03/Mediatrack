@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Resumen from './components/Resumen'
 import Inventario from './components/Inventario'
 import FiltrosInventario from './components/FiltrosInventario'
 import FormularioSolicitud from './components/FormularioSolicitud'
@@ -107,9 +108,13 @@ function App() {
     )
   }
 
+  const hoy = fechaHoy()
+
   return (
     <div className="app">
       <h1>{import.meta.env.VITE_APP_NAME}</h1>
+
+      <Resumen equipos={equipos} solicitudes={solicitudes} hoy={hoy} />
 
       <FormularioSolicitud
         equiposDisponibles={equipos.filter((e) => e.estado === 'Disponible')}
@@ -131,7 +136,7 @@ function App() {
       <ListaPrestamos
         solicitudes={solicitudes}
         equipos={equipos}
-        hoy={fechaHoy()}
+        hoy={hoy}
         onDevolver={devolverSolicitud}
       />
     </div>
