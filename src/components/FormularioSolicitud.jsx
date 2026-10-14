@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { validarFormularioSolicitud } from '../utils/validaciones'
 
 const formVacio = {
   solicitante: '',
@@ -9,7 +10,7 @@ const formVacio = {
 }
 
 // Formulario para registrar una solicitud de préstamo.
-// Valida los campos y le avisa a App con onRegistrar.
+// Las validaciones viven en utils/validaciones.js; aquí solo se muestran.
 function FormularioSolicitud({ equiposDisponibles, onRegistrar }) {
   const [form, setForm] = useState(formVacio)
   const [errores, setErrores] = useState({})
@@ -21,24 +22,9 @@ function FormularioSolicitud({ equiposDisponibles, onRegistrar }) {
     setMensaje(null)
   }
 
-  // Validaciones: campos completos y fecha prevista no anterior a la de préstamo
-  const validar = () => {
-    const e = {}
-    if (form.solicitante.trim() === '') e.solicitante = 'El nombre del solicitante es obligatorio.'
-    if (form.tipoUsuario === '') e.tipoUsuario = 'Selecciona el tipo de usuario.'
-    if (form.codigoEquipo === '') e.codigoEquipo = 'Selecciona un equipo.'
-    if (form.fechaPrestamo === '') e.fechaPrestamo = 'La fecha de préstamo es obligatoria.'
-    if (form.fechaPrevista === '') {
-      e.fechaPrevista = 'La fecha prevista de devolución es obligatoria.'
-    } else if (form.fechaPrestamo !== '' && form.fechaPrevista < form.fechaPrestamo) {
-      e.fechaPrevista = 'La fecha de devolución no puede ser anterior a la de préstamo.'
-    }
-    return e
-  }
-
   const manejarEnvio = (e) => {
     e.preventDefault()
-    const nuevosErrores = validar()
+    const nuevosErrores = validarFormularioSolicitud(form)
     setErrores(nuevosErrores)
     if (Object.keys(nuevosErrores).length > 0) return
 
