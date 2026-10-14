@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { LIMITES_PRESTAMO } from './config'
 import Resumen from './components/Resumen'
 import Inventario from './components/Inventario'
 import FiltrosInventario from './components/FiltrosInventario'
@@ -26,6 +27,14 @@ const fechaHoy = () => {
   const mes = String(d.getMonth() + 1).padStart(2, '0')
   const dia = String(d.getDate()).padStart(2, '0')
   return `${d.getFullYear()}-${mes}-${dia}`
+}
+
+// Días entre dos fechas AAAA-MM-DD. Se usa Date.UTC para que el horario
+// de verano o la zona horaria no alteren el resultado.
+const diasEntre = (inicio, fin) => {
+  const [a1, m1, d1] = inicio.split('-').map(Number)
+  const [a2, m2, d2] = fin.split('-').map(Number)
+  return Math.round((Date.UTC(a2, m2 - 1, d2) - Date.UTC(a1, m1 - 1, d1)) / 86400000)
 }
 
 function App() {
@@ -80,6 +89,19 @@ function App() {
     )
     if (yaPrestado) {
       return { ok: false, error: `El equipo ${equipo.codigo} ya tiene una solicitud activa.` }
+    }
+
+    // CR-02: la duración no puede superar el límite del tipo de usuario
+    const limite = LIMITES_PRESTAMO[datos.tipoUsuario]
+    if (limite === undefined) {
+      return { ok: false, error: 'El tipo de usuario no es válido.' }
+    }
+    const dias = diasEntre(datos.fechaPrestamo, datos.fechaPrevista)
+    if (dias > limite) {
+      return {
+        ok: false,
+        error: `El plazo máximo para ${datos.tipoUsuario} es de ${limite} días. La solicitud pide ${dias} días.`,
+      }
     }
 
     const id = generarIdSolicitud()

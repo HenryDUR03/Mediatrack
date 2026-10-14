@@ -138,3 +138,22 @@ mediatrack/
 5. Devolver la solicitud del caso 1 y comprobar que la etiqueta desaparece y el indicador baja en 1.
 
 **Fecha de verificación:** 13 de octubre de 2026.
+
+### CR-02: límites de duración del préstamo
+
+**Regla:** la duración máxima depende del tipo de usuario: 3 días para Estudiante y 7 días para Docente. Los límites están en `src/config.js` (`LIMITES_PRESTAMO`) y se pueden cambiar sin tocar los componentes.
+
+**Interpretación del plazo:** los días se cuentan desde la fecha de préstamo y el límite es inclusivo. Un Estudiante que pide un equipo el día 10 puede devolverlo como máximo el día 13. Si la fecha prevista supera el límite, la solicitud se rechaza con un mensaje que indica el plazo máximo y los días solicitados.
+
+| Caso | Tipo | Duración | Resultado esperado |
+|---|---|---|---|
+| 1 | Estudiante | 3 días | Se registra |
+| 2 | Estudiante | 4 días | Se rechaza con mensaje |
+| 3 | Docente | 7 días | Se registra |
+| 4 | Docente | 8 días | Se rechaza con mensaje |
+| 5 | Cualquiera | Fecha prevista anterior a la de préstamo | Se rechaza con error en el campo |
+
+**Procedimiento:**
+1. Ejecutar `npm run dev`.
+2. Registrar solicitudes con las duraciones de los casos 1 a 4, usando un equipo Disponible en cada una.
+3. Verificar que las rechazadas muestren el mensaje y que el equipo siga Disponible.
