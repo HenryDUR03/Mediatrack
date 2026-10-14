@@ -1,3 +1,5 @@
+import { esAtrasada } from '../utils/atrasos'
+
 // Muestra las solicitudes, resalta las atrasadas y permite registrar devoluciones.
 // La lógica (qué pasa al devolver) vive en App; aquí solo se pide confirmación.
 function ListaPrestamos({ solicitudes, equipos, hoy, onDevolver }) {
@@ -5,9 +7,6 @@ function ListaPrestamos({ solicitudes, equipos, hoy, onDevolver }) {
     const equipo = equipos.find((e) => e.codigo === codigo)
     return equipo ? equipo.nombre : codigo
   }
-
-  // Una solicitud está atrasada si sigue Activa y su fecha prevista es anterior a hoy
-  const esAtrasada = (s) => s.estado === 'Activo' && s.fechaPrevista < hoy
 
   const confirmarDevolucion = (s, aMantenimiento) => {
     const destino = aMantenimiento ? 'enviará a Mantenimiento' : 'dejará Disponible'
@@ -38,7 +37,7 @@ function ListaPrestamos({ solicitudes, equipos, hoy, onDevolver }) {
           </thead>
           <tbody>
             {solicitudes.map((s) => (
-              <tr key={s.id} className={esAtrasada(s) ? 'fila-atrasada' : ''}>
+              <tr key={s.id} className={esAtrasada(s, hoy) ? 'fila-atrasada' : ''}>
                 <td>{s.id}</td>
                 <td>{s.solicitante}</td>
                 <td>{s.tipoUsuario}</td>
@@ -49,7 +48,7 @@ function ListaPrestamos({ solicitudes, equipos, hoy, onDevolver }) {
                 <td>{s.fechaPrevista}</td>
                 <td>
                   <span className={`estado estado-${s.estado.toLowerCase()}`}>{s.estado}</span>
-                  {esAtrasada(s) && <span className="estado estado-atrasado">Atrasado</span>}
+                  {esAtrasada(s, hoy) && <span className="estado estado-atrasado">Atrasado</span>}
                 </td>
                 <td>
                   {s.estado === 'Activo' && (
