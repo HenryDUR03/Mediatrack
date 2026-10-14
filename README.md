@@ -113,3 +113,28 @@ mediatrack/
 - La fecha de hoy se arma con la hora local del navegador.
 - Los filtros crean una lista derivada con `filter()` y nunca modifican el inventario original.
 - El estado de React no se muta: siempre se crean arreglos y objetos nuevos.
+
+## Plan de pruebas
+
+### CR-01: préstamos con fecha prevista de hoy
+
+**Regla:** un préstamo está atrasado solo si su solicitud está Activa y su fecha prevista es anterior a hoy (`fechaPrevista < hoy`). Las fechas se comparan como texto `AAAA-MM-DD`, así que la hora del día y la zona horaria no influyen.
+
+**Resultado de la verificación:** el error reportado no es reproducible en la versión 1.0.0. Se comprobó registrando solicitudes con distintas fechas previstas.
+
+| Caso | Fecha prevista | Estado de la solicitud | Resultado esperado |
+|---|---|---|---|
+| 1 | Ayer | Activo | Atrasado |
+| 2 | Hoy | Activo | No atrasado |
+| 3 | Mañana | Activo | No atrasado |
+| 4 | Anterior a hoy | Devuelto | No atrasado (ya fue devuelto) |
+| 5 | 2026-01-08 (dato inicial SOL-001) | Activo | Atrasado |
+
+**Procedimiento:**
+1. Ejecutar `npm run dev`.
+2. Registrar solicitudes con las fechas de los casos 1 a 3, cada una con un equipo Disponible distinto.
+3. Verificar en la tabla de préstamos que solo el caso 1 muestre la etiqueta "Atrasado".
+4. Verificar que el indicador "Préstamos atrasados" del resumen coincida con las filas marcadas.
+5. Devolver la solicitud del caso 1 y comprobar que la etiqueta desaparece y el indicador baja en 1.
+
+**Fecha de verificación:** 13 de octubre de 2026.
